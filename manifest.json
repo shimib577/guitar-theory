@@ -1,0 +1,21 @@
+{
+  "name": "לימוד תיאוריה - גיטרה",
+  "short_name": "גיטרה תיאוריה",
+  "description": "כלי אינטרקטיבי ללימוד תיאוריה של גיטרה - אקורדים, סולמות ו-Tonnetz",
+  "start_url": "./guitar-theory-perfect.html",
+  "display": "standalone",
+  "background_color": "#1e3c72",
+  "theme_color": "#1e3c72",
+  "orientation": "any",
+  "dir": "rtl",
+  "lang": "he",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='15%' fill='%231e3c72'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' font-size='350'>🎸</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "music"]
+}

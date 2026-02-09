@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e3c72">
+    <meta name="description" content="כלי אינטרקטיבי ללימוד תיאוריה של גיטרה - אקורדים, סולמות ו-Tonnetz">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎸</text></svg>">
+    <title>לימוד תיאוריה - גיטרה</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        select, button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        select {
+            background: white;
+            color: #1e3c72;
+        }
+
+        button {
+            background: #ff6b6b;
+            color: white;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            height: fit-content;
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 1.8em;
+        }
+
+        /* Chord Diagram */
+        .chord-diagram-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .chord-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+        }
+
+        .chord-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .diagram-grid {
+            display: grid;
+            grid-template-rows: repeat(6, 50px);
+            gap: 0;
+            position: relative;
+        }
+
+        .diagram-string {
+            display: grid;
+            grid-template-columns: 40px repeat(5, 60px);
+            align-items: center;
+            position: relative;
+        }
+
+        .diagram-string::after {
+            content: '';
+            position: absolute;
+            right: 40px;
+            left: 0;
+            top: 50%;
+            height: 2px;
+            background: #666;
+            z-index: 1;
+        }
+
+        .string-name {
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            font-size: 1.3em;
+            z-index: 2;
+        }
+
+        .diagram-fret {
+            height: 50px;
+            width: 60px;
+            border-left: 3px solid #999;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .diagram-fret:first-of-type {
+            border-left: 5px solid #333;
+        }
+
+        .finger-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            z-index: 3;
+        }
+
+        .finger-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .finger-1 { background: #ff6b6b; }
+        .finger-2 { background: #4ecdc4; }
+        .finger-3 { background: #45b7d1; }
+        .finger-4 { background: #f7b731; }
+
+        .open-string {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid #00ff00;
+            background: white;
+            z-index: 3;
+        }
+
+        .muted-string {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff0000;
+            font-size: 1.8em;
+            font-weight: bold;
+            z-index: 3;
+        }
+
+        .fret-numbers {
+            display: flex;
+            margin-top: 10px;
+            padding-right: 40px;
+        }
+
+        .fret-num {
+            width: 60px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .position-label {
+            background: #1e3c72;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Finger Legend */
+        .finger-legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .finger-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .finger-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Fretboard - רחב יותר */
+        .fretboard-container {
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .fretboard {
+            background: linear-gradient(180deg, #8B4513 0%, #A0522D 50%, #8B4513 100%);
+            border-radius: 10px;
+            padding: 30px;
+            display: inline-block;
+            min-width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .fb-string {
+            display: flex;
+            margin: 25px 0;
+            align-items: center;
+            position: relative;
+            height: 4px;
+            background: #e0e0e0;
+        }
+
+        .fb-string:nth-child(1) { height: 2px; }
+        .fb-string:nth-child(2) { height: 2.5px; }
+        .fb-string:nth-child(3) { height: 3px; }
+        .fb-string:nth-child(4) { height: 3.5px; }
+        .fb-string:nth-child(5) { height: 4px; }
+        .fb-string:nth-child(6) { height: 4.5px; }
+
+        .fb-string-label {
+            width: 50px;
+            font-weight: bold;
+            font-size: 1.5em;
+            text-align: center;
+            color: #ffd700;
+            position: absolute;
+            right: -70px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .fb-frets {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        .fb-fret {
+            width: 90px;
+            position: relative;
+            border-left: 3px solid #666;
+            height: 170px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fb-fret:first-child {
+            border-left: 6px solid #333;
+        }
+
+        .fb-fret-number {
+            position: absolute;
+            bottom: -40px;
+            font-size: 1.2em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .fb-note {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .fb-note:hover {
+            transform: translate(-50%, -50%) scale(1.3);
+            box-shadow: 0 0 20px rgba(255,255,255,0.7);
+            z-index: 20;
+        }
+
+        .fb-note.root {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ff0000;
+            box-shadow: 0 0 15px rgba(255,107,107,0.6);
+        }
+
+        .fb-note.third {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .fb-note.fifth {
+            background: #45b7d1;
+            color: white;
+        }
+
+        .fb-note.seventh {
+            background: #f7b731;
+            color: #333;
+        }
+
+        .fb-note.ninth {
+            background: #a855f7;
+            color: white;
+        }
+
+        .fb-note.scale {
+            background: rgba(255,255,255,0.4);
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Info Panel */
+        .info-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .info-section h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .info-section p {
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .play-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .play-button {
+            background: #4ecdc4;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .play-button:hover {
+            background: #3dbdb4;
+        }
+
+        /* Tonnetz */
+        .tonnetz-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 600px;
+        }
+
+        .tonnetz-grid {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tonnetz-row {
+            display: flex;
+            align-items: center;
+            margin: -15px 0;
+        }
+
+        .tonnetz-row:nth-child(even) {
+            margin-right: 60px;
+        }
+
+        .tonnetz-note {
+            width: 70px;
+            height: 70px;
+            margin: 5px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 3px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tonnetz-note:hover {
+            transform: scale(1.15);
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        .tonnetz-note.active {
+            background: #ff6b6b;
+            border-color: #ff0000;
+            color: white;
+            box-shadow: 0 0 25px rgba(255,107,107,0.8);
+            transform: scale(1.2);
+        }
+
+        .tonnetz-note.in-chord {
+            background: #4ecdc4;
+            border-color: #3dbdb4;
+            color: white;
+        }
+
+        .tonnetz-note.third {
+            background: #45b7d1;
+            border-color: #3a9db8;
+            color: white;
+        }
+
+        .tonnetz-note.fifth {
+            background: #f7b731;
+            border-color: #d99e28;
+            color: #333;
+        }
+
+        .tonnetz-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tonnetz-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .tonnetz-legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .tonnetz-info {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .controls { grid-template-columns: 1fr; }
+            .finger-legend { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎸 לימוד תיאוריה - גיטרה</h1>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="mode">מצב לימוד:</label>
+                <select id="mode">
+                    <option value="chord">אקורדים</option>
+                    <option value="scale">סולמות</option>
+                    <option value="tonnetz">Tonnetz - קשרים הרמוניים</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="root">תו יסוד:</label>
+                <select id="root">
+                    <option value="C">C - דו</option>
+                    <option value="D">D - רה</option>
+                    <option value="E">E - מי</option>
+                    <option value="F">F - פה</option>
+                    <option value="G">G - סול</option>
+                    <option value="A">A - לה</option>
+                    <option value="B">B - סי</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="chordTypeGroup">
+                <label for="chordType">סוג אקורד:</label>
+                <select id="chordType">
+                    <option value="major">מז'ור (Major)</option>
+                    <option value="minor">מינור (Minor)</option>
+                    <option value="7">דומיננט 7 (Dom7)</option>
+                    <option value="maj7">מז'ור 7 (Maj7)</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="scaleTypeGroup" style="display: none;">
+                <label for="scaleType">סוג סולם:</label>
+                <select id="scaleType">
+                    <option value="major">מז'ור (Major)</option>
+                    <option value="minor">מינור טבעי</option>
+                    <option value="pentatonic">פנטטוני מז'ור</option>
+                    <option value="blues">בלוז</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Chord Diagram Panel -->
+            <div class="panel" id="chordPanel">
+                <h2>📊 צורת האקורד</h2>
+                <div class="chord-diagram-container">
+                    <div class="chord-name" id="chordName">E Major</div>
+                    <div style="width: 100%; max-width: 400px; margin: 20px 0;">
+                        <label style="display: block; text-align: center; margin-bottom: 10px; font-size: 1.2em;">
+                            פוזיציה על הצוואר: <span id="positionValue" style="color: #ffd700; font-weight: bold;">1</span>
+                        </label>
+                        <input type="range" id="positionSlider" min="1" max="4" value="1" 
+                               style="width: 100%; cursor: pointer; height: 10px; background: linear-gradient(to left, #4ecdc4, #ff6b6b); border-radius: 5px;">
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.9em; opacity: 0.8;">
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                        </div>
+                    </div>
+                    <div class="chord-diagram" id="chordDiagram"></div>
+                    <div class="finger-legend">
+                        <div class="finger-item">
+                            <div class="finger-color finger-1">1</div>
+                            <span>אצבע 1</span>
+                        </div>
+                        <div class="finger-item">
+                            <div class="finger-color finger-2">2</div>
+                            <span>אצבע 2</span>
+                        </div>
+                        <div class="finger-item">
+                            <div class="finger-color finger-3">3</div>
+                            <span>אצבע 3</span>
+                        </div>
+                        <div class="finger-item">
+                            <div class="finger-color finger-4">4</div>
+                            <span>אצבע 4</span>
+                        </div>
+                    </div>
+                    <div class="play-controls">
+                        <button class="play-button" onclick="playChord()">
+                            🔊 נגן אקורד
+                        </button>
+                        <button class="play-button" onclick="playArpeggio()">
+                            🎵 נגן ארפג'יו
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="panel">
+                <h2>💡 הסבר תיאורטי</h2>
+                <div class="info-section" id="theoryInfo"></div>
+            </div>
+        </div>
+
+        <!-- Fretboard Panel -->
+        <div class="panel">
+            <h2>🎸 צוואר הגיטרה - כל המיקומים</h2>
+            <div class="fretboard-container">
+                <div class="fretboard" id="fretboard"></div>
+            </div>
+        </div>
+
+        <!-- Tonnetz Panel -->
+        <div class="panel" id="tonnetzPanel" style="display: none;">
+            <h2>🎹 Tonnetz - קשרים הרמוניים</h2>
+            <div class="tonnetz-container">
+                <div id="tonnetzGrid"></div>
+            </div>
+            <div class="tonnetz-legend">
+                <div class="tonnetz-legend-item">
+                    <div class="tonnetz-legend-color" style="background: #ff6b6b;"></div>
+                    <span>תו יסוד</span>
+                </div>
+                <div class="tonnetz-legend-item">
+                    <div class="tonnetz-legend-color" style="background: #4ecdc4;"></div>
+                    <span>תווים באקורד</span>
+                </div>
+            </div>
+            <div class="tonnetz-info">
+                <strong>מה זה Tonnetz?</strong><br>
+                רשת של תווים שמראה את הקשרים ההרמוניים ביניהם.<br>
+                תנועה ימינה/שמאלה = קווינטה (5 חצאי טונים)<br>
+                תנועה אלכסונית = שלישית מז'ורית/מינורית<br>
+                משולשים באותו כיוון = אקורדים מז'וריים, משולשים הפוכים = אקורדים מינוריים
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const STRINGS = ['E', 'A', 'D', 'G', 'B', 'E']; // מלמעלה למטה
+        const FRETS = 15;
+
+        // Audio context
+        let audioContext;
+        let currentNotes = [];
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playNote(frequency, duration = 1, startTime = 0) {
+            initAudio();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.value = frequency;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + startTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + duration);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start(audioContext.currentTime + startTime);
+            oscillator.stop(audioContext.currentTime + startTime + duration);
+        }
+
+        function noteToFrequency(note, octave = 4) {
+            const noteFrequencies = {
+                'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13,
+                'E': 329.63, 'F': 349.23, 'F#': 369.99, 'G': 392.00,
+                'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88
+            };
+            return noteFrequencies[note] * Math.pow(2, octave - 4);
+        }
+
+        function playChord() {
+            if (currentNotes.length === 0) return;
+            currentNotes.forEach(note => {
+                playNote(noteToFrequency(note.note, note.octave), 2);
+            });
+        }
+
+        function playArpeggio() {
+            if (currentNotes.length === 0) return;
+            currentNotes.forEach((note, index) => {
+                playNote(noteToFrequency(note.note, note.octave), 1, index * 0.3);
+            });
+        }
+
+        // פוזיציות שונות - צורות שונות של אותו אקורד
+        const CHORD_SHAPES = {
+            'C-major': [
+                { fret: 0, strings: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] },  // C צורה פתוחה
+                { fret: 3, strings: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 3, 3, 3, 1] },  // ברה בשריג 3
+                { fret: 5, strings: [3, 3, 2, 0, 1, 0], fingers: [3, 4, 2, 0, 1, 0] },   // פוזיציה 3
+                { fret: 8, strings: [-1, -1, 3, 2, 1, 3], fingers: [0, 0, 3, 2, 1, 4] }, // פוזיציה 4
+                { fret: 12, strings: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] }  // אוקטבה
+            ],
+            'C-minor': [
+                { fret: 0, strings: [-1, 3, 1, 0, 1, 3], fingers: [0, 3, 1, 0, 2, 4] },
+                { fret: 3, strings: [-1, 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1] },
+                { fret: 8, strings: [-1, -1, 3, 1, 1, 1], fingers: [0, 0, 3, 1, 1, 1] },
+                { fret: 10, strings: [3, 1, 0, 0, 3, 3], fingers: [3, 1, 0, 0, 2, 4] }
+            ],
+            'C-7': [
+                { fret: 0, strings: [-1, 3, 2, 3, 1, 0], fingers: [0, 3, 2, 4, 1, 0] },
+                { fret: 3, strings: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1] },
+                { fret: 8, strings: [-1, -1, 3, 2, 3, 1], fingers: [0, 0, 2, 1, 3, 1] }
+            ],
+            'C-maj7': [
+                { fret: 0, strings: [-1, 3, 2, 0, 0, 0], fingers: [0, 3, 2, 0, 0, 0] },
+                { fret: 3, strings: [-1, 1, 3, 2, 3, 1], fingers: [0, 1, 3, 2, 4, 1] },
+                { fret: 8, strings: [-1, -1, 3, 2, 1, 0], fingers: [0, 0, 4, 3, 1, 0] }
+            ],
+            'E-major': [
+                { fret: 0, strings: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0] },  // E פתוח
+                { fret: 4, strings: [-1, -1, 2, 1, 0, 0], fingers: [0, 0, 3, 2, 0, 0] }, // ברה שריג 4
+                { fret: 7, strings: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] },  // פוזיציה 3
+                { fret: 9, strings: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 3, 3, 3, 1] },  // ברה שריג 9
+                { fret: 12, strings: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0] }  // אוקטבה
+            ],
+            'E-minor': [
+                { fret: 0, strings: [0, 2, 2, 0, 0, 0], fingers: [0, 2, 3, 0, 0, 0] },
+                { fret: 7, strings: [-1, 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1] },
+                { fret: 9, strings: [-1, -1, 2, 0, 0, 0], fingers: [0, 0, 2, 0, 0, 0] },
+                { fret: 12, strings: [0, 2, 2, 0, 0, 0], fingers: [0, 2, 3, 0, 0, 0] }
+            ],
+            'E-7': [
+                { fret: 0, strings: [0, 2, 0, 1, 0, 0], fingers: [0, 2, 0, 1, 0, 0] },
+                { fret: 7, strings: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1] },
+                { fret: 9, strings: [-1, -1, 2, 1, 3, 2], fingers: [0, 0, 2, 1, 4, 3] },
+                { fret: 12, strings: [0, 2, 0, 1, 0, 0], fingers: [0, 2, 0, 1, 0, 0] }
+            ],
+            'E-maj7': [
+                { fret: 0, strings: [0, 2, 1, 1, 0, 0], fingers: [0, 3, 1, 2, 0, 0] },
+                { fret: 7, strings: [-1, 1, 3, 2, 3, 1], fingers: [0, 1, 3, 2, 4, 1] },
+                { fret: 9, strings: [-1, -1, 2, 1, 1, 0], fingers: [0, 0, 3, 1, 2, 0] }
+            ],
+            'A-major': [
+                { fret: 0, strings: [-1, 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0] },
+                { fret: 2, strings: [-1, -1, 4, 3, 2, 2], fingers: [0, 0, 4, 3, 1, 2] },
+                { fret: 5, strings: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 3, 3, 3, 1] },
+                { fret: 9, strings: [3, 2, 0, 0, 0, 3], fingers: [2, 1, 0, 0, 0, 3] },
+                { fret: 12, strings: [-1, 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0] }
+            ],
+            'A-minor': [
+                { fret: 0, strings: [-1, 0, 2, 2, 1, 0], fingers: [0, 0, 2, 3, 1, 0] },
+                { fret: 5, strings: [-1, 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1] },
+                { fret: 8, strings: [3, 1, 0, 0, 3, 3], fingers: [3, 1, 0, 0, 2, 4] },
+                { fret: 12, strings: [-1, 0, 2, 2, 1, 0], fingers: [0, 0, 2, 3, 1, 0] }
+            ],
+            'A-7': [
+                { fret: 0, strings: [-1, 0, 2, 0, 2, 0], fingers: [0, 0, 2, 0, 3, 0] },
+                { fret: 5, strings: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1] },
+                { fret: 10, strings: [3, 2, 0, 0, 0, 1], fingers: [3, 2, 0, 0, 0, 1] }
+            ],
+            'A-maj7': [
+                { fret: 0, strings: [-1, 0, 2, 1, 2, 0], fingers: [0, 0, 2, 1, 3, 0] },
+                { fret: 5, strings: [-1, 1, 3, 2, 3, 1], fingers: [0, 1, 3, 2, 4, 1] },
+                { fret: 9, strings: [3, 2, 0, 0, 0, 2], fingers: [3, 2, 0, 0, 0, 4] }
+            ],
+            'D-major': [
+                { fret: 0, strings: [-1, -1, 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2] },
+                { fret: 5, strings: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] },
+                { fret: 7, strings: [-1, -1, 4, 3, 2, 2], fingers: [0, 0, 4, 3, 1, 2] },
+                { fret: 10, strings: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 3, 3, 3, 1] }
+            ],
+            'D-minor': [
+                { fret: 0, strings: [-1, -1, 0, 2, 3, 1], fingers: [0, 0, 0, 2, 3, 1] },
+                { fret: 5, strings: [-1, 3, 1, 0, 1, 3], fingers: [0, 3, 1, 0, 2, 4] },
+                { fret: 10, strings: [-1, 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1] }
+            ],
+            'D-7': [
+                { fret: 0, strings: [-1, -1, 0, 2, 1, 2], fingers: [0, 0, 0, 2, 1, 3] },
+                { fret: 5, strings: [-1, 3, 2, 3, 1, 0], fingers: [0, 3, 2, 4, 1, 0] },
+                { fret: 10, strings: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1] }
+            ],
+            'D-maj7': [
+                { fret: 0, strings: [-1, -1, 0, 2, 2, 2], fingers: [0, 0, 0, 1, 1, 1] },
+                { fret: 5, strings: [-1, 3, 2, 0, 0, 0], fingers: [0, 3, 2, 0, 0, 0] },
+                { fret: 10, strings: [-1, 1, 3, 2, 3, 1], fingers: [0, 1, 3, 2, 4, 1] }
+            ],
+            'G-major': [
+                { fret: 0, strings: [3, 2, 0, 0, 0, 3], fingers: [2, 1, 0, 0, 0, 3] },
+                { fret: 3, strings: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 3, 3, 3, 1] },
+                { fret: 7, strings: [-1, -1, 4, 3, 2, 2], fingers: [0, 0, 4, 3, 1, 2] },
+                { fret: 10, strings: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] }
+            ],
+            'G-minor': [
+                { fret: 3, strings: [-1, 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1] },
+                { fret: 10, strings: [-1, 3, 1, 0, 1, 3], fingers: [0, 3, 1, 0, 2, 4] }
+            ],
+            'G-7': [
+                { fret: 0, strings: [3, 2, 0, 0, 0, 1], fingers: [3, 2, 0, 0, 0, 1] },
+                { fret: 3, strings: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1] },
+                { fret: 10, strings: [-1, 3, 2, 3, 1, 0], fingers: [0, 3, 2, 4, 1, 0] }
+            ],
+            'G-maj7': [
+                { fret: 0, strings: [3, 2, 0, 0, 0, 2], fingers: [3, 2, 0, 0, 0, 4] },
+                { fret: 3, strings: [-1, 1, 3, 2, 3, 1], fingers: [0, 1, 3, 2, 4, 1] },
+                { fret: 10, strings: [-1, 3, 2, 0, 0, 0], fingers: [0, 3, 2, 0, 0, 0] }
+            ],
+            'F-major': [
+                { fret: 1, strings: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1] },
+                { fret: 5, strings: [-1, -1, 3, 2, 1, 1], fingers: [0, 0, 3, 2, 1, 1] },
+                { fret: 8, strings: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 3, 3, 3, 1] },
+                { fret: 13, strings: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1] }
+            ],
+            'F-minor': [
+                { fret: 1, strings: [1, 3, 3, 1, 1, 1], fingers: [1, 3, 4, 1, 1, 1] },
+                { fret: 8, strings: [-1, 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1] }
+            ],
+            'F-7': [
+                { fret: 1, strings: [1, 3, 1, 2, 1, 1], fingers: [1, 3, 1, 2, 1, 1] },
+                { fret: 8, strings: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1] }
+            ],
+            'F-maj7': [
+                { fret: 1, strings: [1, 3, 2, 2, 1, 1], fingers: [1, 4, 2, 3, 1, 1] },
+                { fret: 8, strings: [-1, 1, 3, 2, 3, 1], fingers: [0, 1, 3, 2, 4, 1] }
+            ],
+            'B-major': [
+                { fret: 2, strings: [-1, 2, 4, 4, 4, 2], fingers: [0, 1, 3, 3, 3, 1] },
+                { fret: 4, strings: [3, 2, 0, 0, 0, 3], fingers: [2, 1, 0, 0, 0, 3] },
+                { fret: 7, strings: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 3, 3, 3, 1] },
+                { fret: 11, strings: [-1, -1, 4, 3, 2, 2], fingers: [0, 0, 4, 3, 1, 2] }
+            ],
+            'B-minor': [
+                { fret: 2, strings: [-1, 2, 4, 4, 3, 2], fingers: [0, 1, 3, 4, 2, 1] },
+                { fret: 7, strings: [-1, 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1] }
+            ],
+            'B-7': [
+                { fret: 0, strings: [-1, 2, 1, 2, 0, 2], fingers: [0, 2, 1, 3, 0, 4] },
+                { fret: 7, strings: [-1, 1, 3, 1, 3, 1], fingers: [0, 1, 3, 1, 4, 1] }
+            ],
+            'B-maj7': [
+                { fret: 2, strings: [-1, 2, 4, 3, 4, 2], fingers: [0, 1, 3, 2, 4, 1] },
+                { fret: 7, strings: [-1, 1, 3, 2, 3, 1], fingers: [0, 1, 3, 2, 4, 1] }
+            ]
+        };
+
+        const INTERVALS = {
+            major: [0, 4, 7],
+            minor: [0, 3, 7],
+            '7': [0, 4, 7, 10],
+            'maj7': [0, 4, 7, 11]
+        };
+
+        const SCALES = {
+            major: [0, 2, 4, 5, 7, 9, 11],
+            minor: [0, 2, 3, 5, 7, 8, 10],
+            pentatonic: [0, 2, 4, 7, 9],
+            blues: [0, 3, 5, 6, 7, 10]
+        };
+
+        function drawChordDiagram(root, type, posIndex) {
+            const key = `${root}-${type}`;
+            const shapes = CHORD_SHAPES[key];
+            if (!shapes || !shapes[posIndex - 1]) return;
+
+            const shapeData = shapes[posIndex - 1];
+            const fretPosition = shapeData.fret;
+            const strings = shapeData.strings;
+            const fingers = shapeData.fingers;
+
+            const diagram = document.getElementById('chordDiagram');
+            diagram.innerHTML = '';
+
+            const grid = document.createElement('div');
+            grid.className = 'diagram-grid';
+
+            currentNotes = [];
+
+            for (let s = 0; s < 6; s++) {
+                const stringDiv = document.createElement('div');
+                stringDiv.className = 'diagram-string';
+
+                const stringName = document.createElement('div');
+                stringName.className = 'string-name';
+                stringName.textContent = STRINGS[s];
+                stringDiv.appendChild(stringName);
+
+                for (let f = 0; f < 5; f++) {
+                    const fretDiv = document.createElement('div');
+                    fretDiv.className = 'diagram-fret';
+
+                    const stringFret = strings[s];
+                    
+                    if (stringFret === f && f > 0) {
+                        const dot = document.createElement('div');
+                        dot.className = `finger-dot finger-${fingers[s]}`;
+                        dot.textContent = fingers[s];
+                        
+                        const stringNote = STRINGS[s];
+                        const stringNoteIndex = NOTES.indexOf(stringNote);
+                        const actualFret = fretPosition + f;
+                        const noteIndex = (stringNoteIndex + actualFret) % 12;
+                        const note = NOTES[noteIndex];
+                        
+                        dot.onclick = () => {
+                            const octave = s <= 2 ? 4 : 3;
+                            playNote(noteToFrequency(note, octave), 1.5);
+                        };
+                        
+                        currentNotes.push({ note, octave: s <= 2 ? 4 : 3 });
+                        fretDiv.appendChild(dot);
+                    }
+
+                    if (f === 0 && stringFret === 0 && fretPosition === 0) {
+                        const open = document.createElement('div');
+                        open.className = 'open-string';
+                        fretDiv.appendChild(open);
+                        currentNotes.push({ note: STRINGS[s], octave: s <= 2 ? 4 : 3 });
+                    }
+
+                    if (f === 0 && (stringFret === -1 || (stringFret === 0 && fretPosition > 0))) {
+                        const muted = document.createElement('div');
+                        muted.className = 'muted-string';
+                        muted.textContent = '✕';
+                        fretDiv.appendChild(muted);
+                    }
+
+                    stringDiv.appendChild(fretDiv);
+                }
+
+                grid.appendChild(stringDiv);
+            }
+
+            diagram.appendChild(grid);
+
+            const fretNums = document.createElement('div');
+            fretNums.className = 'fret-numbers';
+            for (let i = 0; i < 5; i++) {
+                const num = document.createElement('div');
+                num.className = 'fret-num';
+                num.textContent = fretPosition + i;
+                fretNums.appendChild(num);
+            }
+            diagram.appendChild(fretNums);
+
+            const posLabel = document.createElement('div');
+            posLabel.className = 'position-label';
+            posLabel.textContent = `פוזיציה ${posIndex} - שריג ${fretPosition}`;
+            diagram.appendChild(posLabel);
+            
+            const typeNames = { major: 'מז\'ור', minor: 'מינור', '7': 'דומיננט 7', 'maj7': 'מז\'ור 7' };
+            document.getElementById('chordName').textContent = `${root} ${typeNames[type]}`;
+            
+            updateTheoryInfo(root, type, posIndex, fretPosition);
+            highlightChordOnFretboard(root, type);
+        }
+
+        function updateTheoryInfo(root, type, posIndex, fretPosition) {
+            const typeNames = {
+                major: 'מז\'ור',
+                minor: 'מינור',
+                '7': 'דומיננט 7',
+                'maj7': 'מז\'ור 7'
+            };
+
+            const explanations = {
+                major: 'אקורד מז\'ור נבנה מ: יסוד + שלישית מז\'ורית (4 חצאי טונים) + חמישית (7 חצאי טונים)',
+                minor: 'אקורד מינור נבנה מ: יסוד + שלישית מינורית (3 חצאי טונים) + חמישית (7 חצאי טונים)',
+                '7': 'דומיננט 7: אקורד מז\'ור + שביעית מינורית - יוצר מתח שדורש פתרון',
+                'maj7': 'מז\'ור 7: אקורד מז\'ור + שביעית מז\'ורית - צליל חלומי ומתוחכם'
+            };
+
+            const info = document.getElementById('theoryInfo');
+            info.innerHTML = `
+                <h3>🎵 ${root} ${typeNames[type]}</h3>
+                <p><strong>מבנה:</strong> ${explanations[type]}</p>
+                <p style="margin-top: 15px;"><strong>📍 פוזיציה ${posIndex}:</strong> צורה שונה של האקורד בשריג ${fretPosition}</p>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255,215,0,0.2); border-radius: 8px; border-right: 4px solid #ffd700;">
+                    <strong>💡 הסבר:</strong><br>
+                    כל פוזיציה היא <strong>צורה שונה לגמרי</strong> לנגן את ${root} ${typeNames[type]}. אותם תווים, אבל סידור אצבעות שונה ומיקום שונה על הצוואר!
+                </div>
+                <div style="margin-top: 15px; padding: 15px; background: rgba(78,205,196,0.2); border-radius: 8px; border-right: 4px solid #4ecdc4;">
+                    <strong>🎸 למה זה שימושי?</strong><br>
+                    פוזיציות שונות נותנות צלילים שונים (voicings) ומאפשרות לך לנגן את האקורד באזורים שונים של הצוואר. בחר את הפוזיציה שהכי נוחה לך או שנשמעת הכי טוב!
+                </div>
+            `;
+        }
+
+        function createFretboard() {
+            const fretboard = document.getElementById('fretboard');
+            fretboard.innerHTML = '';
+
+            for (let s = 0; s < STRINGS.length; s++) {
+                const stringDiv = document.createElement('div');
+                stringDiv.className = 'fb-string';
+                
+                const label = document.createElement('div');
+                label.className = 'fb-string-label';
+                label.textContent = STRINGS[s];
+                stringDiv.appendChild(label);
+
+                const fretsDiv = document.createElement('div');
+                fretsDiv.className = 'fb-frets';
+
+                for (let f = 0; f < FRETS; f++) {
+                    const fretDiv = document.createElement('div');
+                    fretDiv.className = 'fb-fret';
+                    
+                    if (s === 0) {
+                        const fretNum = document.createElement('div');
+                        fretNum.className = 'fb-fret-number';
+                        fretNum.textContent = f;
+                        fretDiv.appendChild(fretNum);
+                    }
+
+                    fretsDiv.appendChild(fretDiv);
+                }
+
+                stringDiv.appendChild(fretsDiv);
+                fretboard.appendChild(stringDiv);
+            }
+        }
+
+        function getNoteAtFret(string, fret) {
+            const stringNote = STRINGS[string];
+            const stringIndex = NOTES.indexOf(stringNote);
+            return NOTES[(stringIndex + fret) % 12];
+        }
+
+        function highlightChordOnFretboard(root, type) {
+            document.querySelectorAll('.fb-note').forEach(note => note.remove());
+
+            const intervals = INTERVALS[type];
+            const rootIndex = NOTES.indexOf(root);
+            const chordNotes = intervals.map(interval => NOTES[(rootIndex + interval) % 12]);
+
+            const strings = document.querySelectorAll('.fb-string');
+            strings.forEach((stringDiv, s) => {
+                const frets = stringDiv.querySelectorAll('.fb-fret');
+                frets.forEach((fret, f) => {
+                    const note = getNoteAtFret(s, f);
+                    if (chordNotes.includes(note)) {
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'fb-note';
+                        noteDiv.textContent = note;
+                        
+                        const interval = intervals[chordNotes.indexOf(note)];
+                        if (interval === 0) noteDiv.classList.add('root');
+                        else if (interval === 3 || interval === 4) noteDiv.classList.add('third');
+                        else if (interval === 7) noteDiv.classList.add('fifth');
+                        else if (interval === 10 || interval === 11) noteDiv.classList.add('seventh');
+                        
+                        noteDiv.onclick = () => {
+                            const octave = s <= 2 ? 4 : 3;
+                            playNote(noteToFrequency(note, octave), 1);
+                        };
+                        
+                        fret.appendChild(noteDiv);
+                    }
+                });
+            });
+        }
+
+        function displayScale(root, type) {
+            document.querySelectorAll('.fb-note').forEach(note => note.remove());
+
+            const intervals = SCALES[type];
+            const rootIndex = NOTES.indexOf(root);
+            const scaleNotes = intervals.map(interval => NOTES[(rootIndex + interval) % 12]);
+
+            const strings = document.querySelectorAll('.fb-string');
+            strings.forEach((stringDiv, s) => {
+                const frets = stringDiv.querySelectorAll('.fb-fret');
+                frets.forEach((fret, f) => {
+                    const note = getNoteAtFret(s, f);
+                    if (scaleNotes.includes(note)) {
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'fb-note';
+                        noteDiv.textContent = note;
+                        
+                        if (note === root) {
+                            noteDiv.classList.add('root');
+                        } else {
+                            noteDiv.classList.add('scale');
+                        }
+                        
+                        noteDiv.onclick = () => {
+                            const octave = s <= 2 ? 4 : 3;
+                            playNote(noteToFrequency(note, octave), 1);
+                        };
+                        
+                        fret.appendChild(noteDiv);
+                    }
+                });
+            });
+        }
+
+        // Tonnetz Functions
+        function createTonnetz() {
+            // יצירת רשת טונץ - מערך דו-ממדי של תווים
+            const tonnetzLayout = [
+                ['F', 'C', 'G', 'D', 'A', 'E'],
+                ['D#', 'A#', 'F', 'C', 'G', 'D'],
+                ['C#', 'G#', 'D#', 'A#', 'F', 'C'],
+                ['B', 'F#', 'C#', 'G#', 'D#', 'A#'],
+                ['A', 'E', 'B', 'F#', 'C#', 'G#']
+            ];
+
+            const container = document.getElementById('tonnetzGrid');
+            container.innerHTML = '';
+            container.className = 'tonnetz-grid';
+
+            tonnetzLayout.forEach((row, rowIndex) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'tonnetz-row';
+
+                row.forEach((note, colIndex) => {
+                    const noteDiv = document.createElement('div');
+                    noteDiv.className = 'tonnetz-note';
+                    noteDiv.textContent = note;
+                    noteDiv.dataset.note = note;
+                    
+                    noteDiv.onclick = () => {
+                        playNote(noteToFrequency(note, 4), 1);
+                    };
+
+                    rowDiv.appendChild(noteDiv);
+                });
+
+                container.appendChild(rowDiv);
+            });
+        }
+
+        function highlightTonnetz(root, type) {
+            // נקה הדגשות קודמות
+            document.querySelectorAll('.tonnetz-note').forEach(note => {
+                note.classList.remove('active', 'in-chord', 'third', 'fifth');
+            });
+
+            const intervals = INTERVALS[type];
+            const rootIndex = NOTES.indexOf(root);
+            const chordNotes = intervals.map(interval => NOTES[(rootIndex + interval) % 12]);
+
+            document.querySelectorAll('.tonnetz-note').forEach(noteDiv => {
+                const note = noteDiv.dataset.note;
+                
+                if (note === root) {
+                    noteDiv.classList.add('active');
+                } else if (chordNotes.includes(note)) {
+                    const interval = intervals[chordNotes.indexOf(note)];
+                    if (interval === 3 || interval === 4) {
+                        noteDiv.classList.add('third');
+                    } else if (interval === 7) {
+                        noteDiv.classList.add('fifth');
+                    } else {
+                        noteDiv.classList.add('in-chord');
+                    }
+                }
+            });
+        }
+
+        function updateChordDisplay() {
+            const root = document.getElementById('root').value;
+            const type = document.getElementById('chordType').value;
+            const key = `${root}-${type}`;
+            const shapes = CHORD_SHAPES[key];
+            
+            if (!shapes) return;
+            
+            // עדכן את הסליידר למספר הפוזיציות הזמינות
+            const slider = document.getElementById('positionSlider');
+            const maxPos = shapes.length;
+            slider.max = maxPos;
+            
+            // וודא שהפוזיציה הנוכחית תקפה
+            let position = parseInt(slider.value);
+            if (position > maxPos) {
+                position = 1;
+                slider.value = 1;
+            }
+            
+            // עדכן את התצוגה המספרית
+            const posLabel = document.querySelector('#positionSlider + div');
+            posLabel.innerHTML = Array.from({length: maxPos}, (_, i) => `<span>${i+1}</span>`).join('');
+            
+            document.getElementById('positionValue').textContent = position;
+            drawChordDiagram(root, type, position);
+        }
+
+        // Event listeners
+        document.getElementById('root').addEventListener('change', () => {
+            const mode = document.getElementById('mode').value;
+            if (mode === 'chord') {
+                updateChordDisplay();
+            } else if (mode === 'tonnetz') {
+                const root = document.getElementById('root').value;
+                const type = document.getElementById('chordType').value;
+                highlightTonnetz(root, type);
+            }
+        });
+        
+        document.getElementById('chordType').addEventListener('change', () => {
+            const mode = document.getElementById('mode').value;
+            if (mode === 'chord') {
+                updateChordDisplay();
+            } else if (mode === 'tonnetz') {
+                const root = document.getElementById('root').value;
+                const type = document.getElementById('chordType').value;
+                highlightTonnetz(root, type);
+            }
+        });
+        
+        document.getElementById('positionSlider').addEventListener('input', function() {
+            updateChordDisplay();
+        });
+
+        document.getElementById('mode').addEventListener('change', function() {
+            const mode = this.value;
+            const isChord = mode === 'chord';
+            const isScale = mode === 'scale';
+            const isTonnetz = mode === 'tonnetz';
+            
+            document.getElementById('chordPanel').style.display = isChord ? 'block' : 'none';
+            document.getElementById('chordTypeGroup').style.display = (isChord || isTonnetz) ? 'flex' : 'none';
+            document.getElementById('scaleTypeGroup').style.display = isScale ? 'flex' : 'none';
+            document.getElementById('tonnetzPanel').style.display = isTonnetz ? 'block' : 'none';
+            
+            if (isChord) {
+                updateChordDisplay();
+            } else if (isScale) {
+                const root = document.getElementById('root').value;
+                const scaleType = document.getElementById('scaleType').value;
+                displayScale(root, scaleType);
+            } else if (isTonnetz) {
+                createTonnetz();
+                const root = document.getElementById('root').value;
+                const type = document.getElementById('chordType').value;
+                highlightTonnetz(root, type);
+            }
+        });
+
+        document.getElementById('scaleType').addEventListener('change', function() {
+            const root = document.getElementById('root').value;
+            displayScale(root, this.value);
+        });
+
+        // Initialize
+        createFretboard();
+        updateChordDisplay();
+
+        // PWA - Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {
+                    console.log('Service Worker registration optional');
+                });
+            });
+        }
+
+        // PWA - Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            const installDiv = document.createElement('div');
+            installDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #4ecdc4;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 50px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                cursor: pointer;
+                z-index: 1000;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            installDiv.innerHTML = '📱 התקן כאפליקציה';
+            installDiv.onclick = async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        installDiv.remove();
+                    }
+                    deferredPrompt = null;
+                }
+            };
+            document.body.appendChild(installDiv);
+        }
+    </script>
+</body>
+</html>
