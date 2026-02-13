@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="description" content="Liran's Guitar Theory Master - כלי לימוד גיטרה מקצועי עם אקורדים, סולמות, מטרונום ועוד">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Guitar Master">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎸</text></svg>">
+    <title>🎸 Liran's Guitar Theory Master</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #151932;
+            --bg-tertiary: #1e2440;
+            --bg-hover: #2a3154;
+            --text-primary: #e9ecef;
+            --text-secondary: #adb5bd;
+            --border-color: #2a3154;
+            --accent-primary: #4dabf7;
+            --accent-secondary: #845ef7;
+            --accent-success: #51cf66;
+            --accent-warning: #ffd43b;
+            --accent-danger: #ff6b6b;
+        }
+
+        body.light-mode {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+            --bg-hover: #dee2e6;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --accent-primary: #0d6efd;
+            --accent-secondary: #6610f2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: clamp(10px, 3vw, 20px);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            font-size: clamp(1.8em, 5vw, 3em);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .theme-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+
+        .controls {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, button, input {
+            padding: 12px 16px;
+            font-size: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        select:hover, button:hover {
+            border-color: var(--accent-primary);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .panel h2 {
+            margin-bottom: 25px;
+            color: var(--accent-primary);
+            font-size: 1.8em;
+            font-weight: 700;
+            border-bottom: 3px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .chord-name {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: var(--accent-primary);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .chord-diagram {
+            background: var(--bg-tertiary);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .diagram-grid {
+            display: grid;
+            grid-template-rows: repeat(6, 55px);
+            gap: 0;
+        }
+
+        .diagram-string {
+            display: grid;
+            grid-template-columns: 45px repeat(5, 70px);
+            align-items: center;
+            position: relative;
+        }
+
+        .diagram-string::after {
+            content: '';
+            position: absolute;
+            right: 45px;
+            left: 0;
+            top: 50%;
+            height: 2px;
+            background: var(--text-secondary);
+            z-index: 1;
+        }
+
+        .string-name {
+            font-weight: 700;
+            color: var(--accent-primary);
+            text-align: center;
+            font-size: 1.3em;
+            z-index: 2;
+        }
+
+        .diagram-fret {
+            height: 55px;
+            width: 70px;
+            border-left: 3px solid var(--text-secondary);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .diagram-fret:first-of-type {
+            border-left: 5px solid var(--text-primary);
+        }
+
+        .finger-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+            z-index: 3;
+        }
+
+        .finger-dot:hover {
+            transform: scale(1.15);
+        }
+
+        .finger-1 { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
+        .finger-2 { background: linear-gradient(135deg, #4ecdc4, #3dbdb4); }
+        .finger-3 { background: linear-gradient(135deg, #45b7d1, #3a9db8); }
+        .finger-4 { background: linear-gradient(135deg, #f7b731, #f39c12); }
+
+        .open-string {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-success);
+            background: var(--bg-secondary);
+            z-index: 3;
+        }
+
+        .muted-string {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent-danger);
+            font-size: 1.8em;
+            font-weight: 700;
+            z-index: 3;
+        }
+
+        .fret-numbers {
+            display: flex;
+            margin-top: 10px;
+            padding-right: 45px;
+        }
+
+        .fret-number {
+            width: 70px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 1em;
+        }
+
+        .position-label {
+            text-align: center;
+            background: var(--bg-hover);
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .fretboard {
+            background: linear-gradient(180deg, #6d4c41 0%, #8d6e63 50%, #6d4c41 100%);
+            border-radius: 12px;
+            padding: 30px;
+            overflow-x: auto;
+            box-shadow: inset 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .fb-string {
+            display: flex;
+            margin: 25px 0;
+            align-items: center;
+            position: relative;
+            background: #ddd;
+            border-radius: 2px;
+        }
+
+        .fb-string:nth-child(1) { height: 2px; }
+        .fb-string:nth-child(2) { height: 2.5px; }
+        .fb-string:nth-child(3) { height: 3.5px; }
+        .fb-string:nth-child(4) { height: 4px; }
+        .fb-string:nth-child(5) { height: 4.5px; }
+        .fb-string:nth-child(6) { height: 5px; }
+
+        .fb-string-label {
+            position: absolute;
+            right: -60px;
+            font-weight: 700;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .fb-fret {
+            width: clamp(60px, 9vw, 95px);
+            position: relative;
+            border-left: 3px solid #8d6e63;
+            height: clamp(110px, 17vw, 180px);
+        }
+
+        .fb-fret:first-child {
+            border-left: 6px solid #5d4037;
+        }
+
+        .fb-note {
+            width: clamp(36px, 7vw, 48px);
+            height: clamp(36px, 7vw, 48px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: clamp(0.85em, 1.7vw, 1.05em);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+        }
+
+        .fb-note:hover {
+            transform: translate(-50%, -50%) scale(1.25);
+            z-index: 20;
+        }
+
+        .fb-note.root {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .fb-note.scale {
+            background: rgba(78, 205, 196, 0.8);
+            color: white;
+        }
+
+        .position-control {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .position-control input[type="range"] {
+            width: 100%;
+            max-width: 400px;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to left, var(--accent-primary), var(--accent-secondary));
+            -webkit-appearance: none;
+        }
+
+        .position-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--accent-primary);
+            cursor: pointer;
+        }
+
+        .metronome-display {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .bpm-value {
+            font-size: 6em;
+            font-weight: 800;
+            color: var(--accent-primary);
+            line-height: 1;
+        }
+
+        .beat-visualizer {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+
+        .beat-indicator {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: 4px solid var(--border-color);
+            transition: all 0.1s;
+        }
+
+        .beat-indicator.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: scale(1.15);
+            box-shadow: 0 0 30px var(--accent-primary);
+        }
+
+        .progression-card {
+            background: var(--bg-tertiary);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid var(--accent-primary);
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .progression-card:hover {
+            transform: translateX(-8px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .progression-chords {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin: 15px 0;
+        }
+
+        .tonnetz-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 40px 20px;
+        }
+
+        .tonnetz-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .tonnetz-row:nth-child(odd) {
+            margin-right: 50px;
+        }
+
+        .tonnetz-note {
+            width: clamp(50px, 8vw, 70px);
+            height: clamp(50px, 8vw, 70px);
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: clamp(0.9em, 1.8vw, 1.2em);
+        }
+
+        .tonnetz-note:hover {
+            transform: scale(1.15);
+            background: var(--bg-hover);
+        }
+
+        .tonnetz-note.active {
+            background: var(--accent-danger);
+            color: white;
+            transform: scale(1.2);
+        }
+
+        .tonnetz-note.in-chord {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="container">
+        <div class="header">
+            <h1>🎸 Liran's Guitar Theory Master</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>מצב לימוד</label>
+                <select id="mode" onchange="changeMode()">
+                    <option value="chords">🎸 אקורדים</option>
+                    <option value="scales">🎵 סולמות</option>
+                    <option value="circle">⭕ מעגל חמישיות</option>
+                    <option value="progressions">🎼 פרוגרסיות</option>
+                    <option value="metronome">🥁 מטרונום</option>
+                    <option value="tonnetz">🔷 Tonnetz</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="rootControl">
+                <label>תו יסוד</label>
+                <select id="root" onchange="update()">
+                    <option value="C">C - דו</option>
+                    <option value="C#">C# - דו דיאז</option>
+                    <option value="D">D - רה</option>
+                    <option value="D#">D# - רה דיאז</option>
+                    <option value="E">E - מי</option>
+                    <option value="F">F - פה</option>
+                    <option value="F#">F# - פה דיאז</option>
+                    <option value="G">G - סול</option>
+                    <option value="G#">G# - סול דיאז</option>
+                    <option value="A">A - לה</option>
+                    <option value="A#">A# - לה דיאז</option>
+                    <option value="B">B - סי</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="chordControl">
+                <label>סוג אקורד</label>
+                <select id="chordType" onchange="update()">
+                    <optgroup label="בסיסי">
+                        <option value="major">מז'ור (Major)</option>
+                        <option value="minor">מינור (Minor)</option>
+                        <option value="dim">מופחת (Dim)</option>
+                        <option value="aug">מוגדל (Aug)</option>
+                    </optgroup>
+                    <optgroup label="שביעיות">
+                        <option value="7">דומיננט 7</option>
+                        <option value="maj7">מז'ור 7</option>
+                        <option value="min7">מינור 7</option>
+                    </optgroup>
+                    <optgroup label="הרחבות">
+                        <option value="9">9</option>
+                        <option value="sus2">Sus2</option>
+                        <option value="sus4">Sus4</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="control-group" id="scaleControl" style="display:none;">
+                <label>סוג סולם</label>
+                <select id="scaleType" onchange="update()">
+                    <optgroup label="בסיסי">
+                        <option value="major">מז'ור</option>
+                        <option value="minor">מינור טבעי</option>
+                        <option value="harmonic">מינור הרמוני</option>
+                    </optgroup>
+                    <optgroup label="פנטטוני">
+                        <option value="penta-major">פנטטוני מז'ור</option>
+                        <option value="penta-minor">פנטטוני מינור</option>
+                        <option value="blues">בלוז</option>
+                    </optgroup>
+                    <optgroup label="Modes">
+                        <option value="dorian">Dorian</option>
+                        <option value="phrygian">Phrygian</option>
+                        <option value="lydian">Lydian</option>
+                        <option value="mixolydian">Mixolydian</option>
+                    </optgroup>
+                    <optgroup label="אקזוטי">
+                        <option value="spanish">Spanish</option>
+                        <option value="gypsy">Gypsy</option>
+                        <option value="arabic">Arabic</option>
+                        <option value="japanese">Japanese</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+
+        <div id="content"></div>
+        
+        <div style="text-align: center; padding: 30px 20px; margin-top: 50px; border-top: 2px solid var(--border-color); color: var(--text-secondary); font-size: 0.9em;">
+            <p style="margin-bottom: 10px;">נבנה ב-❤️ על ידי <strong style="color: var(--accent-primary);">Liran Lin</strong></p>
+            <p>🎸 Guitar Theory Master © 2026</p>
+        </div>
+    </div>
+
+    <script>
+        const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const STRINGS = ['E', 'A', 'D', 'G', 'B', 'E'];
+        
+        // Generate all chord shapes for all roots
+        function generateChordShapes() {
+            const baseShapes = {
+                'C-major': [
+                    { fret: 0, strings: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] },
+                    { fret: 3, strings: [-1, 1, 3, 3, 3, 1], fingers: [0, 1, 3, 3, 3, 1] },
+                    { fret: 5, strings: [3, 3, 2, 0, 1, 0], fingers: [3, 4, 2, 0, 1, 0] },
+                    { fret: 8, strings: [-1, -1, 3, 2, 1, 3], fingers: [0, 0, 3, 2, 1, 4] }
+                ],
+                'C-minor': [
+                    { fret: 3, strings: [-1, 1, 3, 3, 2, 1], fingers: [0, 1, 3, 4, 2, 1] },
+                    { fret: 8, strings: [-1, -1, 3, 1, 1, 1], fingers: [0, 0, 3, 1, 1, 1] },
+                    { fret: 10, strings: [3, 1, 0, 0, 3, 3], fingers: [3, 1, 0, 0, 2, 4] },
+                    { fret: 11, strings: [-1, 4, 2, 1, 2, 0], fingers: [0, 4, 2, 1, 3, 0] }
+                ]
+            };
+            
+            const allShapes = {};
+            
+            NOTES.forEach((note, offset) => {
+                ['major', 'minor', '7', 'maj7', 'min7', 'dim', 'aug', '9', 'sus2', 'sus4'].forEach(type => {
+                    const key = `${note}-${type}`;
+                    const baseKey = `C-${type === 'major' ? 'major' : type === 'minor' ? 'minor' : 'major'}`;
+                    const base = baseShapes[baseKey] || baseShapes['C-major'];
+                    
+                    allShapes[key] = base.map(shape => ({
+                        fret: (shape.fret + offset) % 13,
+                        strings: shape.strings,
+                        fingers: shape.fingers
+                    }));
+                });
+            });
+            
+            return allShapes;
+        }
+        
+        const CHORD_SHAPES = generateChordShapes();
+
+        const SCALE_INTERVALS = {
+            major: [0, 2, 4, 5, 7, 9, 11],
+            minor: [0, 2, 3, 5, 7, 8, 10],
+            harmonic: [0, 2, 3, 5, 7, 8, 11],
+            'penta-major': [0, 2, 4, 7, 9],
+            'penta-minor': [0, 3, 5, 7, 10],
+            blues: [0, 3, 5, 6, 7, 10],
+            dorian: [0, 2, 3, 5, 7, 9, 10],
+            phrygian: [0, 1, 3, 5, 7, 8, 10],
+            lydian: [0, 2, 4, 6, 7, 9, 11],
+            mixolydian: [0, 2, 4, 5, 7, 9, 10],
+            spanish: [0, 1, 4, 5, 7, 8, 10],
+            gypsy: [0, 2, 3, 6, 7, 8, 11],
+            arabic: [0, 1, 4, 5, 7, 8, 11],
+            japanese: [0, 1, 5, 7, 8]
+        };
+
+        let currentMode = 'chords';
+        let currentRoot = 'C';
+        let currentChordType = 'major';
+        let currentScaleType = 'major';
+        let currentPosition = 0;
+        let audioContext = null;
+        let metronomeInterval = null;
+        let isMetroPlaying = false;
+        let currentBeat = 0;
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isDark = document.body.classList.contains('light-mode');
+            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+        }
+
+        function changeMode() {
+            currentMode = document.getElementById('mode').value;
+            document.getElementById('rootControl').style.display = 
+                ['chords', 'scales', 'progressions', 'tonnetz'].includes(currentMode) ? 'block' : 'none';
+            document.getElementById('chordControl').style.display = 
+                ['chords', 'tonnetz'].includes(currentMode) ? 'block' : 'none';
+            document.getElementById('scaleControl').style.display = 
+                currentMode === 'scales' ? 'block' : 'none';
+            
+            update();
+        }
+
+        function update() {
+            currentRoot = document.getElementById('root').value;
+            if (currentMode === 'chords') {
+                currentChordType = document.getElementById('chordType').value;
+                currentPosition = 0; // Reset position
+                showChords();
+            } else if (currentMode === 'scales') {
+                currentScaleType = document.getElementById('scaleType').value;
+                showScales();
+            } else if (currentMode === 'circle') {
+                showCircle();
+            } else if (currentMode === 'progressions') {
+                showProgressions();
+            } else if (currentMode === 'metronome') {
+                showMetronome();
+            } else if (currentMode === 'tonnetz') {
+                currentChordType = document.getElementById('chordType').value;
+                showTonnetz();
+            }
+        }
+
+        function showChords() {
+            const key = `${currentRoot}-${currentChordType}`;
+            const shapes = CHORD_SHAPES[key] || CHORD_SHAPES['C-major'];
+            const shape = shapes[currentPosition];
+            
+            document.getElementById('content').innerHTML = `
+                <div class="main-grid">
+                    <div class="panel">
+                        <h2>📊 דיאגרמת אקורד</h2>
+                        <div class="chord-name">${currentRoot} ${getChordName()}</div>
+                        <div class="position-control">
+                            <label>פוזיציה: <span id="posValue">${currentPosition + 1}</span> / ${shapes.length}</label>
+                            <input type="range" min="0" max="${shapes.length - 1}" value="${currentPosition}" 
+                                   oninput="updatePosition(this.value)">
+                        </div>
+                        ${drawChordDiagram(shape)}
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button onclick="playChord()">🔊 נגן אקורד</button>
+                            <button onclick="playArpeggio()" style="margin-right: 15px;">🎵 ארפג'יו</button>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h2>💡 הסבר תיאורטי</h2>
+                        ${getTheoryInfo()}
+                    </div>
+                </div>
+                <div class="panel">
+                    <h2>🎸 צוואר הגיטרה</h2>
+                    ${drawFretboard()}
+                </div>
+            `;
+        }
+
+        function getChordName() {
+            const names = {
+                major: 'Major', minor: 'Minor', dim: 'Dim', aug: 'Aug',
+                '7': '7', maj7: 'Maj7', min7: 'm7',
+                '9': '9', sus2: 'Sus2', sus4: 'Sus4'
+            };
+            return names[currentChordType] || currentChordType;
+        }
+
+        function drawChordDiagram(shape) {
+            let html = '<div class="chord-diagram"><div class="diagram-grid">';
+            
+            for (let s = 0; s < 6; s++) {
+                html += '<div class="diagram-string">';
+                html += `<div class="string-name">${STRINGS[s]}</div>`;
+                
+                for (let f = 0; f < 5; f++) {
+                    html += '<div class="diagram-fret">';
+                    
+                    if (shape.strings[s] === f && f > 0) {
+                        const stringNote = STRINGS[s];
+                        const stringNoteIndex = NOTES.indexOf(stringNote);
+                        const actualFret = shape.fret + f;
+                        const noteIndex = (stringNoteIndex + actualFret) % 12;
+                        const note = NOTES[noteIndex];
+                        
+                        html += `<div class="finger-dot finger-${shape.fingers[s]}" onclick="playNote('${note}')">${shape.fingers[s]}</div>`;
+                    }
+                    
+                    if (f === 0 && shape.strings[s] === 0 && shape.fret === 0) {
+                        html += `<div class="open-string" onclick="playNote('${STRINGS[s]}')"></div>`;
+                    }
+                    
+                    if (f === 0 && shape.strings[s] === -1) {
+                        html += '<div class="muted-string">✕</div>';
+                    }
+                    
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            
+            // Add fret numbers
+            html += '<div class="fret-numbers">';
+            for (let i = 0; i < 5; i++) {
+                html += `<div class="fret-number">${shape.fret + i}</div>`;
+            }
+            html += '</div>';
+            
+            // Add position label
+            html += `<div class="position-label">שריג ${shape.fret}</div>`;
+            
+            html += '</div>';
+            return html;
+        }
+
+        function getTheoryInfo() {
+            const theory = {
+                major: { name: 'מז\'ור', formula: '1-3-5', sound: 'שמח וחיובי', usage: 'הבסיס של רוב המוזיקה' },
+                minor: { name: 'מינור', formula: '1-♭3-5', sound: 'עצוב ורגשי', usage: 'רגשות עמוקים' },
+                '7': { name: 'דומיננט 7', formula: '1-3-5-♭7', sound: 'מתח ופתרון', usage: 'בלוז, רוק, ג\'אז' },
+                maj7: { name: 'מז\'ור 7', formula: '1-3-5-7', sound: 'חלומי, מתוחכם', usage: 'ג\'אז, R&B' },
+                sus2: { name: 'Sus2', formula: '1-2-5', sound: 'מרחף, אווירי', usage: 'אינטרו, שטיפה' },
+                sus4: { name: 'Sus4', formula: '1-4-5', sound: 'תלוי, דורש פתרון', usage: 'מעבר, מתח' }
+            };
+            
+            const info = theory[currentChordType] || theory.major;
+            return `
+                <div style="background: var(--bg-tertiary); padding: 20px; border-radius: 10px;">
+                    <h3 style="color: var(--accent-primary); margin-bottom: 15px;">${info.name}</h3>
+                    <p style="margin: 10px 0;"><strong>נוסחה:</strong> ${info.formula}</p>
+                    <p style="margin: 10px 0;"><strong>צליל:</strong> ${info.sound}</p>
+                    <p style="margin: 10px 0;"><strong>שימוש:</strong> ${info.usage}</p>
+                </div>
+            `;
+        }
+
+        function updatePosition(value) {
+            currentPosition = parseInt(value);
+            showChords();
+        }
+
+        function showScales() {
+            const intervals = SCALE_INTERVALS[currentScaleType] || SCALE_INTERVALS.major;
+            const rootIndex = NOTES.indexOf(currentRoot);
+            const scaleNotes = intervals.map(i => NOTES[(rootIndex + i) % 12]);
+            
+            document.getElementById('content').innerHTML = `
+                <div class="panel">
+                    <h2>🎵 סולם ${currentRoot} ${currentScaleType}</h2>
+                    <div style="text-align: center; font-size: 1.5em; margin: 30px 0; color: var(--accent-primary);">
+                        ${scaleNotes.join(' - ')}
+                    </div>
+                    ${drawScaleFretboard(scaleNotes)}
+                </div>
+            `;
+        }
+
+        function drawScaleFretboard(scaleNotes) {
+            let html = '<div class="fretboard">';
+            
+            for (let s = 0; s < 6; s++) {
+                html += '<div class="fb-string">';
+                html += `<div class="fb-string-label">${STRINGS[s]}</div>`;
+                html += '<div style="display: flex; flex: 1;">';
+                
+                for (let f = 0; f < 15; f++) {
+                    html += '<div class="fb-fret">';
+                    
+                    const stringNoteIndex = NOTES.indexOf(STRINGS[s]);
+                    const fretNote = NOTES[(stringNoteIndex + f) % 12];
+                    
+                    if (scaleNotes.includes(fretNote)) {
+                        const isRoot = fretNote === currentRoot;
+                        html += `<div class="fb-note ${isRoot ? 'root' : 'scale'}" onclick="playNote('${fretNote}')">${fretNote}</div>`;
+                    }
+                    
+                    html += '</div>';
+                }
+                
+                html += '</div></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        function showCircle() {
+            const notes = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'F'];
+            
+            document.getElementById('content').innerHTML = `
+                <div class="panel">
+                    <h2>⭕ מעגל חמישיות</h2>
+                    <svg viewBox="0 0 600 600" style="max-width: 600px; margin: 0 auto; display: block;">
+                        ${notes.map((note, i) => {
+                            const angle = (i * 30 - 90) * Math.PI / 180;
+                            const x = 300 + 200 * Math.cos(angle);
+                            const y = 300 + 200 * Math.sin(angle);
+                            return `
+                                <circle cx="${x}" cy="${y}" r="40" fill="var(--accent-primary)" opacity="0.8" style="cursor: pointer;" onclick="playNote('${note}')"/>
+                                <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" 
+                                      fill="white" font-size="22" font-weight="bold" style="pointer-events: none;">${note}</text>
+                            `;
+                        }).join('')}
+                    </svg>
+                    <div style="text-align: center; margin-top: 30px; padding: 20px; background: var(--bg-tertiary); border-radius: 10px;">
+                        <strong>💡 הסבר:</strong><br>
+                        תנועה בכיוון השעון = עלייה בקווינטה (7 חצאי טונים)<br>
+                        תנועה נגד השעון = ירידה בקווינטה
+                    </div>
+                </div>
+            `;
+        }
+
+        function showProgressions() {
+            const progressions = [
+                { roman: 'I-IV-V', degrees: [0, 5, 7] },
+                { roman: 'I-V-vi-IV', degrees: [0, 7, 9, 5] },
+                { roman: 'ii-V-I', degrees: [2, 7, 0] },
+                { roman: 'I-vi-IV-V', degrees: [0, 9, 5, 7] },
+                { roman: 'vi-IV-I-V', degrees: [9, 5, 0, 7] }
+            ];
+            
+            const rootIndex = NOTES.indexOf(currentRoot);
+            
+            document.getElementById('content').innerHTML = `
+                <div class="panel">
+                    <h2>🎼 פרוגרסיות אקורדים ב-${currentRoot}</h2>
+                    ${progressions.map(prog => {
+                        const chords = prog.degrees.map(deg => {
+                            const noteIndex = (rootIndex + deg) % 12;
+                            const note = NOTES[noteIndex];
+                            const isMinor = [2, 9].includes(deg); // ii and vi are minor
+                            return note + (isMinor ? 'm' : '');
+                        });
+                        
+                        return `
+                            <div class="progression-card" onclick="playProgression('${chords.join(',')}')">
+                                <div style="font-size: 1.3em; font-weight: 700; color: var(--accent-primary);">${prog.roman}</div>
+                                <div class="progression-chords">${chords.join(' - ')}</div>
+                                <div style="color: var(--text-secondary); margin: 10px 0;">לחץ כדי לנגן</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function showMetronome() {
+            document.getElementById('content').innerHTML = `
+                <div class="panel">
+                    <h2>🥁 מטרונום</h2>
+                    <div class="metronome-display">
+                        <div class="bpm-value" id="bpmDisplay">120</div>
+                        <div style="color: var(--text-secondary); font-size: 1.2em; margin-top: 10px;">BPM</div>
+                    </div>
+                    <div style="text-align: center; margin: 30px auto; max-width: 500px;">
+                        <input type="range" id="bpmSlider" min="40" max="240" value="120" 
+                               style="width: 100%;" oninput="updateBPM()">
+                    </div>
+                    <div class="beat-visualizer">
+                        <div class="beat-indicator" id="beat0"></div>
+                        <div class="beat-indicator" id="beat1"></div>
+                        <div class="beat-indicator" id="beat2"></div>
+                        <div class="beat-indicator" id="beat3"></div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button id="metroBtn" onclick="toggleMetronome()" style="font-size: 1.2em; padding: 15px 40px;">
+                            ▶️ התחל
+                        </button>
+                        <button onclick="tapTempo()" style="margin-right: 15px;">👆 Tap Tempo</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showTonnetz() {
+            const tonnetzLayout = [
+                ['A♭', 'E♭', 'B♭', 'F', 'C', 'G'],
+                ['F', 'C', 'G', 'D', 'A', 'E'],
+                ['D♭', 'A♭', 'E♭', 'B♭', 'F', 'C'],
+                ['B♭', 'F', 'C', 'G', 'D', 'A'],
+                ['G♭', 'D♭', 'A♭', 'E♭', 'B♭', 'F']
+            ];
+            
+            const intervals = {
+                major: [0, 4, 7],
+                minor: [0, 3, 7]
+            };
+            
+            const chordIntervals = intervals[currentChordType] || intervals.major;
+            const rootIndex = NOTES.indexOf(currentRoot);
+            const chordNotes = chordIntervals.map(i => NOTES[(rootIndex + i) % 12]);
+            
+            let gridHtml = '<div class="tonnetz-grid">';
+            tonnetzLayout.forEach((row, i) => {
+                gridHtml += '<div class="tonnetz-row">';
+                row.forEach(noteDisplay => {
+                    const noteMap = {
+                        'A♭': 'G#', 'B♭': 'A#', 'D♭': 'C#', 
+                        'E♭': 'D#', 'G♭': 'F#'
+                    };
+                    const note = noteMap[noteDisplay] || noteDisplay;
+                    
+                    const isRoot = note === currentRoot;
+                    const isInChord = chordNotes.includes(note);
+                    const classes = isRoot ? 'active' : (isInChord ? 'in-chord' : '');
+                    
+                    gridHtml += `<div class="tonnetz-note ${classes}" onclick="playNote('${note}')">${noteDisplay}</div>`;
+                });
+                gridHtml += '</div>';
+            });
+            gridHtml += '</div>';
+            
+            document.getElementById('content').innerHTML = `
+                <div class="panel">
+                    <h2>🔷 Tonnetz - ${currentRoot} ${getChordName()}</h2>
+                    ${gridHtml}
+                    <div style="text-align: center; margin-top: 30px; padding: 20px; background: var(--bg-tertiary); border-radius: 10px;">
+                        <strong>💡 הסבר:</strong><br>
+                        תנועה אופקית = קווינטה (7 חצאי טונים)<br>
+                        תנועה אלכסונית = שלישיות (3-4 חצאי טונים)<br>
+                        משולשים = אקורדים (△ מז\'ור, ▽ מינור)
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateBPM() {
+            const bpm = document.getElementById('bpmSlider').value;
+            document.getElementById('bpmDisplay').textContent = bpm;
+        }
+
+        function toggleMetronome() {
+            isMetroPlaying = !isMetroPlaying;
+            const btn = document.getElementById('metroBtn');
+            
+            if (isMetroPlaying) {
+                btn.textContent = '⏸️ עצור';
+                startMetronome();
+            } else {
+                btn.textContent = '▶️ התחל';
+                stopMetronome();
+            }
+        }
+
+        function startMetronome() {
+            const bpm = parseInt(document.getElementById('bpmSlider').value);
+            const interval = 60000 / bpm;
+            
+            metronomeInterval = setInterval(() => {
+                playClick();
+                flashBeat();
+            }, interval);
+        }
+
+        function stopMetronome() {
+            if (metronomeInterval) {
+                clearInterval(metronomeInterval);
+                currentBeat = 0;
+                document.querySelectorAll('.beat-indicator').forEach(b => b.classList.remove('active'));
+            }
+        }
+
+        function playClick() {
+            if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            osc.frequency.value = currentBeat === 0 ? 1000 : 800;
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            osc.start();
+            osc.stop(audioContext.currentTime + 0.1);
+        }
+
+        function flashBeat() {
+            document.querySelectorAll('.beat-indicator').forEach((b, i) => {
+                b.classList.toggle('active', i === currentBeat);
+            });
+            currentBeat = (currentBeat + 1) % 4;
+        }
+
+        let tapTimes = [];
+        function tapTempo() {
+            const now = Date.now();
+            tapTimes.push(now);
+            if (tapTimes.length > 5) tapTimes.shift();
+            
+            if (tapTimes.length >= 2) {
+                let sum = 0;
+                for (let i = 1; i < tapTimes.length; i++) {
+                    sum += tapTimes[i] - tapTimes[i-1];
+                }
+                const avg = sum / (tapTimes.length - 1);
+                const bpm = Math.round(60000 / avg);
+                
+                document.getElementById('bpmSlider').value = bpm;
+                updateBPM();
+            }
+        }
+
+        function drawFretboard() {
+            const intervals = {
+                major: [0, 4, 7],
+                minor: [0, 3, 7],
+                '7': [0, 4, 7, 10],
+                maj7: [0, 4, 7, 11]
+            };
+            
+            const chordIntervals = intervals[currentChordType] || intervals.major;
+            const rootIndex = NOTES.indexOf(currentRoot);
+            const chordNotes = chordIntervals.map(i => NOTES[(rootIndex + i) % 12]);
+            
+            let html = '<div class="fretboard">';
+            
+            for (let s = 0; s < 6; s++) {
+                html += '<div class="fb-string">';
+                html += `<div class="fb-string-label">${STRINGS[s]}</div>`;
+                html += '<div style="display: flex; flex: 1;">';
+                
+                for (let f = 0; f < 15; f++) {
+                    html += '<div class="fb-fret">';
+                    
+                    const stringNoteIndex = NOTES.indexOf(STRINGS[s]);
+                    const fretNote = NOTES[(stringNoteIndex + f) % 12];
+                    
+                    if (chordNotes.includes(fretNote)) {
+                        const isRoot = fretNote === currentRoot;
+                        html += `<div class="fb-note ${isRoot ? 'root' : 'scale'}" onclick="playNote('${fretNote}')">${fretNote}</div>`;
+                    }
+                    
+                    html += '</div>';
+                }
+                
+                html += '</div></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        function playNote(note) {
+            if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            const noteFreqs = {
+                'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13,
+                'E': 329.63, 'F': 349.23, 'F#': 369.99, 'G': 392.00,
+                'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88
+            };
+            
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            osc.frequency.value = noteFreqs[note] || 440;
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+            
+            osc.start();
+            osc.stop(audioContext.currentTime + 1);
+        }
+
+        function playChord() {
+            // Play root note
+            playNote(currentRoot);
+        }
+
+        function playArpeggio() {
+            const intervals = {
+                major: [0, 4, 7],
+                minor: [0, 3, 7]
+            };
+            
+            const chordIntervals = intervals[currentChordType] || intervals.major;
+            const rootIndex = NOTES.indexOf(currentRoot);
+            const chordNotes = chordIntervals.map(i => NOTES[(rootIndex + i) % 12]);
+            
+            chordNotes.forEach((note, i) => {
+                setTimeout(() => playNote(note), i * 300);
+            });
+        }
+
+        function playProgression(chordsStr) {
+            alert(`מנגן פרוגרסיה: ${chordsStr.replace(/,/g, ' - ')}`);
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            const installDiv = document.createElement('div');
+            installDiv.id = 'installPrompt';
+            installDiv.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+                color: white;
+                padding: 15px 30px;
+                border-radius: 50px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+                cursor: pointer;
+                z-index: 10000;
+                font-weight: bold;
+                font-size: 1.1em;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: slideUp 0.5s ease;
+            `;
+            installDiv.innerHTML = '📱 התקן כאפליקציה';
+            
+            installDiv.onclick = async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        installDiv.remove();
+                    }
+                    deferredPrompt = null;
+                }
+            };
+            
+            document.body.appendChild(installDiv);
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(() => {
+                    console.log('✅ Service Worker registered');
+                }).catch(() => {
+                    console.log('ℹ️ Service Worker not available (optional)');
+                });
+            });
+        }
+
+        changeMode();
+    </script>
+</body>
+</html>
